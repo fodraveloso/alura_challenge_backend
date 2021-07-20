@@ -8,7 +8,9 @@ import org.springframework.validation.ObjectError;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Generated;
 
+@Generated
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonCreator {
 

@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import br.com.alura.flix.core.exceptions.DadosParaAtualizacaoIncorretos;
 import br.com.alura.flix.core.exceptions.VideoNaoExisteException;
 import br.com.alura.flix.core.models.VideoDto;
 import br.com.alura.flix.core.models.command.AtualizarVideoCommand;
@@ -156,5 +157,14 @@ class VideosFacadeTest {
 		assertEquals(videoDto.getTitulo(), videoAtualizado.getTitulo());
 		assertEquals(videoDto.getDescricao(), videoAtualizado.getDescricao());
 		assertEquals(videoDto.getUrl(), videoAtualizado.getUrl());
+	}
+	
+	@Test
+	@DisplayName("Tenta atulizar video com request invalido")
+	void atualizaVideoSemDadosParaAtualizar() {
+		
+		AtualizarVideoCommand command = new AtualizarVideoCommand(null, null, null, null);
+		
+		assertThrows(DadosParaAtualizacaoIncorretos.class, () -> videosFacade.executar(command));
 	}
 }
