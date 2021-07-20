@@ -129,7 +129,7 @@ class VideosControllerTest {
 		mockMvc.perform(
 				MockMvcRequestBuilders.post("/video").contentType(MediaType.APPLICATION_JSON)
 						.content(JsonCreator.startJson().name("titulo").value("Título").name("descricao")
-								.value("Descrição").name("url").value("Link do vídeo").endJson()))
+								.value("Descrição").name("url").value("http://link.com/1").endJson()))
 				.andExpect(status().isCreated());
 	}
 
