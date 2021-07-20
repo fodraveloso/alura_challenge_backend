@@ -1,4 +1,4 @@
-package br.com.alura.flix;
+package br.com.alura.flix.utils;
 
 import java.util.List;
 import java.util.Objects;
