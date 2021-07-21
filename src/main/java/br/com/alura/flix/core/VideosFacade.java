@@ -1,11 +1,9 @@
 package br.com.alura.flix.core;
 
 import java.util.Collection;
-import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
-import br.com.alura.flix.core.exceptions.DadosParaAtualizacaoIncorretos;
 import br.com.alura.flix.core.exceptions.VideoNaoExisteException;
 import br.com.alura.flix.core.models.VideoDto;
 import br.com.alura.flix.core.models.command.AtualizarVideoCommand;
@@ -49,11 +47,6 @@ public class VideosFacade implements VideosService {
 
 	@Override
 	public VideoDto executar(AtualizarVideoCommand command) {
-		
-		if (Objects.isNull(command.getTitulo()) && Objects.isNull(command.getDescricao()) && Objects.isNull(command.getUrl())) {
-			
-			throw new DadosParaAtualizacaoIncorretos();
-		}
 		
 		return videosDatabase.atualizarVideo(command).orElseThrow();
 	}

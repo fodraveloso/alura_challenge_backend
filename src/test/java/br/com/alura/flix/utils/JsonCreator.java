@@ -76,6 +76,7 @@ public class JsonCreator {
 		return stringBuffer.toString();
 	}
 
+	@Generated
 	public static class JsonCreatorException extends RuntimeException {
 
 		private static final long serialVersionUID = 1L;

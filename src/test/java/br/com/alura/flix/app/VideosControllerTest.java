@@ -22,10 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import br.com.alura.flix.app.controllers.VideosController;
-import br.com.alura.flix.core.exceptions.DadosParaAtualizacaoIncorretos;
 import br.com.alura.flix.core.exceptions.VideoNaoExisteException;
 import br.com.alura.flix.core.models.VideoDto;
-import br.com.alura.flix.core.models.command.AtualizarVideoCommand;
 import br.com.alura.flix.core.models.command.CadastrarVideoCommand;
 import br.com.alura.flix.core.models.command.DeletarVideoCommand;
 import br.com.alura.flix.core.models.query.ObterVideoQuery;
@@ -176,15 +174,13 @@ class VideosControllerTest {
 	void atualizarLinkVideo() throws Exception {
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/video/1").contentType(MediaType.APPLICATION_JSON)
-				.content(JsonCreator.startJson().name("url").value("Novo Link").endJson())).andExpect(status().isOk());
+				.content(JsonCreator.startJson().name("url").value("http://link.com/1").endJson())).andExpect(status().isOk());
 	}
 
 	@Test
 	@DisplayName("Tenta atualizar video com payload invalido")
 	void atualizarVideoComPayloadInvalido() throws Exception {
 
-		doThrow(new DadosParaAtualizacaoIncorretos()).when(videosService).executar(any(AtualizarVideoCommand.class));
-		
 		mockMvc.perform(MockMvcRequestBuilders.put("/video/1").contentType(MediaType.APPLICATION_JSON)
 				.content(JsonCreator.startJson().endJson())).andExpect(status().isBadRequest());
 	}

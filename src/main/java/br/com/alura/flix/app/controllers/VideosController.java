@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.alura.flix.app.models.AtualizarVideoRequest;
 import br.com.alura.flix.app.models.CadastrarVideoRequest;
 import br.com.alura.flix.app.models.ErroResponse;
-import br.com.alura.flix.core.exceptions.DadosParaAtualizacaoIncorretos;
 import br.com.alura.flix.core.exceptions.VideoNaoExisteException;
 import br.com.alura.flix.core.models.VideoDto;
 import br.com.alura.flix.core.models.command.AtualizarVideoCommand;
@@ -72,7 +73,7 @@ public class VideosController {
 	@PutMapping("/{id}")
 	@PatchMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public void atualizaVideo(@RequestBody AtualizarVideoRequest request, @PathVariable("id") Long id) {
+	public void atualizaVideo(@RequestBody @Validated AtualizarVideoRequest request, @PathVariable("id") Long id) {
 
 		videosService
 				.executar(new AtualizarVideoCommand(id, request.getTitulo(), request.getDescricao(), request.getUrl()));
@@ -91,15 +92,8 @@ public class VideosController {
 	public ErroResponse validacaoPayload(MethodArgumentNotValidException exception) {
 
 		var erroResponse = new ErroResponse(HttpStatus.BAD_REQUEST.value());
-		erroResponse.getErros().addAll(exception.getAllErrors().stream().map(FieldError.class::cast)
-				.map(FieldError::getDefaultMessage).collect(Collectors.toCollection(ArrayList::new)));
+		erroResponse.getErros().addAll(exception.getAllErrors().stream().map(ObjectError::getDefaultMessage)
+				.collect(Collectors.toCollection(ArrayList::new)));
 		return erroResponse;
-	}
-
-	@ExceptionHandler(DadosParaAtualizacaoIncorretos.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ErroResponse dadosParaAtualizacaoIncorretos(DadosParaAtualizacaoIncorretos exception) {
-
-		return new ErroResponse(HttpStatus.BAD_REQUEST.value()).erro("Dados para atualização inválidos");
 	}
 }
