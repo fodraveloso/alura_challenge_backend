@@ -1,4 +1,4 @@
-package br.com.alura.flix.app.videos.models;
+package br.com.alura.flix.app.common.models;
 
 import java.util.ArrayList;
 import java.util.List;

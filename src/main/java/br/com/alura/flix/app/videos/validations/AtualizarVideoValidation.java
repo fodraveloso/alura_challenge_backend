@@ -17,7 +17,7 @@ import br.com.alura.flix.app.videos.validations.impl.AtualizarVideoValidationImp
 @Constraint(validatedBy = AtualizarVideoValidationImpl.class)
 public @interface AtualizarVideoValidation {
 
-	  String message() default "{com.tericcabrel.hotel.constraints.BirthDate.message}";
+	  String message() default "";
 	  Class <?> [] groups() default {};
 	  Class <? extends Payload> [] payload() default {};
 }

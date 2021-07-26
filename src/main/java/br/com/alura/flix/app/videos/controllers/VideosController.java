@@ -1,13 +1,9 @@
 package br.com.alura.flix.app.videos.controllers;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.alura.flix.app.common.models.ErroResponse;
 import br.com.alura.flix.app.videos.models.AtualizarVideoRequest;
 import br.com.alura.flix.app.videos.models.CadastrarVideoRequest;
-import br.com.alura.flix.app.videos.models.ErroResponse;
 import br.com.alura.flix.core.videos.exceptions.VideoNaoExisteException;
 import br.com.alura.flix.core.videos.models.VideoDto;
 import br.com.alura.flix.core.videos.models.command.AtualizarVideoCommand;
@@ -83,15 +79,5 @@ public class VideosController {
 
 		return new ErroResponse(HttpStatus.NOT_FOUND.value())
 				.erro(String.format("Vídeo com id '%s' não existe", exception.getId()));
-	}
-
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ErroResponse validacaoPayload(MethodArgumentNotValidException exception) {
-
-		var erroResponse = new ErroResponse(HttpStatus.BAD_REQUEST.value());
-		erroResponse.getErros().addAll(exception.getAllErrors().stream().map(ObjectError::getDefaultMessage)
-				.collect(Collectors.toCollection(ArrayList::new)));
-		return erroResponse;
 	}
 }
