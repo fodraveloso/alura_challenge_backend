@@ -20,13 +20,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import br.com.alura.flix.core.exceptions.VideoNaoExisteException;
-import br.com.alura.flix.core.models.VideoDto;
-import br.com.alura.flix.core.models.command.AtualizarVideoCommand;
-import br.com.alura.flix.core.models.command.CadastrarVideoCommand;
-import br.com.alura.flix.core.models.command.DeletarVideoCommand;
-import br.com.alura.flix.core.models.query.ObterVideoQuery;
-import br.com.alura.flix.core.ports.outgoing.VideosDatabase;
+import br.com.alura.flix.core.videos.VideosFacade;
+import br.com.alura.flix.core.videos.exceptions.VideoNaoExisteException;
+import br.com.alura.flix.core.videos.models.VideoDto;
+import br.com.alura.flix.core.videos.models.command.AtualizarVideoCommand;
+import br.com.alura.flix.core.videos.models.command.CadastrarVideoCommand;
+import br.com.alura.flix.core.videos.models.command.DeletarVideoCommand;
+import br.com.alura.flix.core.videos.models.query.ObterVideoQuery;
+import br.com.alura.flix.core.videos.ports.outgoing.VideosDatabase;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Core: Videos")

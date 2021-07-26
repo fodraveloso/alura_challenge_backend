@@ -14,11 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import br.com.alura.flix.core.models.VideoDto;
-import br.com.alura.flix.core.models.command.AtualizarVideoCommand;
-import br.com.alura.flix.core.models.command.CadastrarVideoCommand;
-import br.com.alura.flix.infra.entities.VideoEntity;
-import br.com.alura.flix.infra.repositories.VideoRepository;
+import br.com.alura.flix.core.videos.models.VideoDto;
+import br.com.alura.flix.core.videos.models.command.AtualizarVideoCommand;
+import br.com.alura.flix.core.videos.models.command.CadastrarVideoCommand;
+import br.com.alura.flix.infra.videos.VideosAdapter;
+import br.com.alura.flix.infra.videos.entities.VideoEntity;
+import br.com.alura.flix.infra.videos.repositories.VideoRepository;
 
 @DataJpaTest
 @DisplayName("Infra: Videos")

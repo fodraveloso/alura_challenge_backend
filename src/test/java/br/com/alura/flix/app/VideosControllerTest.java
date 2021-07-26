@@ -21,13 +21,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import br.com.alura.flix.app.controllers.VideosController;
-import br.com.alura.flix.core.exceptions.VideoNaoExisteException;
-import br.com.alura.flix.core.models.VideoDto;
-import br.com.alura.flix.core.models.command.CadastrarVideoCommand;
-import br.com.alura.flix.core.models.command.DeletarVideoCommand;
-import br.com.alura.flix.core.models.query.ObterVideoQuery;
-import br.com.alura.flix.core.ports.incoming.VideosService;
+import br.com.alura.flix.app.videos.controllers.VideosController;
+import br.com.alura.flix.core.videos.exceptions.VideoNaoExisteException;
+import br.com.alura.flix.core.videos.models.VideoDto;
+import br.com.alura.flix.core.videos.models.command.CadastrarVideoCommand;
+import br.com.alura.flix.core.videos.models.command.DeletarVideoCommand;
+import br.com.alura.flix.core.videos.models.query.ObterVideoQuery;
+import br.com.alura.flix.core.videos.ports.incoming.VideosService;
 import br.com.alura.flix.utils.JsonCreator;
 
 @WebMvcTest(VideosController.class)
