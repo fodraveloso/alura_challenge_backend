@@ -32,7 +32,7 @@ public class VideoEntity {
 	@Column(nullable = false)
 	private String url;
 	
-	@ManyToOne(optional = false, cascade = CascadeType.ALL)
+	@ManyToOne(optional = false, cascade = CascadeType.MERGE)
 	private CategoriaEntity categoriaEntity;
 	
 

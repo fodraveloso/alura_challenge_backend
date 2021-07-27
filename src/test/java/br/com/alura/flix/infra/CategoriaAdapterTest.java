@@ -18,7 +18,6 @@ import br.com.alura.flix.core.categorias.models.CategoriaDto;
 import br.com.alura.flix.core.categorias.models.command.ApagarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.AtualizarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.CadastrarCategoriaCommand;
-import br.com.alura.flix.core.categorias.models.command.ObterVideoPeloTituloQuery;
 import br.com.alura.flix.core.categorias.models.query.ObterCategoriaPeloIdQuery;
 import br.com.alura.flix.core.categorias.models.query.ObterVideosPorCategoriaQuery;
 import br.com.alura.flix.core.videos.models.VideoDto;
