@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import br.com.alura.flix.core.categorias.models.command.ObterVideoPeloTituloQuery;
+import br.com.alura.flix.core.videos.exceptions.VideoNaoExisteException;
 import br.com.alura.flix.core.videos.models.VideoDto;
 import br.com.alura.flix.core.videos.models.command.AtualizarVideoCommand;
 import br.com.alura.flix.core.videos.models.command.CadastrarVideoCommand;
@@ -52,7 +54,6 @@ class VideosAdapterTest {
 	void pesquisarListaDeVideos() {
 		
 		CategoriaEntity categoria = testEntityManager.persistAndFlush(new CategoriaEntity("LIVRE", "Cor 1"));
-		
 		VideoEntity video = testEntityManager.persistAndFlush(new VideoEntity("Titulo 1", "Descrição 1", "Link 1", categoria));
 		
 		Collection<VideoDto> pesquisarListaDeVideos = adapter.pesquisarListaDeVideos();
@@ -113,6 +114,13 @@ class VideosAdapterTest {
 		VideoEntity video = testEntityManager.persistAndFlush(new VideoEntity("Titulo 1", "Descrição 1", "Link 1", categoria));
 		
 		assertDoesNotThrow(() -> adapter.deletarPeloId(video.getId()));
+	}
+	
+	@Test
+	@DisplayName("Tenta deletar video pelo id que não existe")
+	void deletarVideoPeloIdQueNaoExiste() {
+		
+		assertThrows(VideoNaoExisteException.class, () -> adapter.deletarPeloId(99L));
 	}
 	
 	@Test

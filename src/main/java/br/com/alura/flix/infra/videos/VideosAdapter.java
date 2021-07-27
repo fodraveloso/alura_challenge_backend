@@ -45,7 +45,14 @@ public class VideosAdapter implements VideosDatabase {
 	@Override
 	public void deletarPeloId(Long id) {
 
-		videoRepository.findById(id).ifPresentOrElse(videoRepository::delete, () -> new VideoNaoExisteException(id));
+		Optional<VideoEntity> videoOptional = videoRepository.findById(id);
+		if (videoOptional.isPresent()) {
+			
+			videoRepository.delete(videoOptional.get());
+		} else {
+			
+			throw new VideoNaoExisteException(id);
+		}
 	}
 
 	@Override

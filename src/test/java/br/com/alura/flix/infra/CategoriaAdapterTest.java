@@ -18,6 +18,7 @@ import br.com.alura.flix.core.categorias.models.CategoriaDto;
 import br.com.alura.flix.core.categorias.models.command.ApagarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.AtualizarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.CadastrarCategoriaCommand;
+import br.com.alura.flix.core.categorias.models.command.ObterVideoPeloTituloQuery;
 import br.com.alura.flix.core.categorias.models.query.ObterCategoriaPeloIdQuery;
 import br.com.alura.flix.core.categorias.models.query.ObterVideosPorCategoriaQuery;
 import br.com.alura.flix.core.videos.models.VideoDto;
@@ -141,5 +142,18 @@ class CategoriaAdapterTest {
 		assertEquals(video.getTitulo(), videoObtido.getTitulo());
 		assertEquals(video.getDescricao(), videoObtido.getDescricao());
 		assertEquals(video.getUrl(), videoObtido.getUrl());
+	}
+	
+	@Test
+	@DisplayName("Tenta obter categoria pelo titulo")
+	void obterCategoriaPeloTitulo() {
+		
+		CategoriaEntity categoria = testEntityManager.persistAndFlush(new CategoriaEntity("Titulo 1", "Cor 1"));
+		
+		CategoriaDto categoriaObtida = categoriaAdapter.obterPeloTitulo("Titulo 1");
+		
+		assertEquals(categoria.getId(), categoriaObtida.getId());
+		assertEquals(categoria.getTitulo(), categoriaObtida.getTitulo());
+		assertEquals(categoria.getCor(), categoriaObtida.getCor());
 	}
 }

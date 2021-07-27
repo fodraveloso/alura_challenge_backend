@@ -22,7 +22,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import br.com.alura.flix.core.categorias.models.CategoriaDto;
 import br.com.alura.flix.core.categorias.models.command.ObterVideoPeloTituloQuery;
+import br.com.alura.flix.core.categorias.ports.outgoing.CategoriaDatabase;
 import br.com.alura.flix.core.videos.VideosFacade;
 import br.com.alura.flix.core.videos.exceptions.VideoNaoExisteException;
 import br.com.alura.flix.core.videos.models.VideoDto;
@@ -38,6 +40,9 @@ class VideosFacadeTest {
 
 	@Mock
 	private VideosDatabase videosDatabase;
+	
+	@Mock
+	private CategoriaDatabase categoriaDatabase;
 
 	@InjectMocks
 	private VideosFacade videosFacade;
@@ -133,6 +138,28 @@ class VideosFacadeTest {
 		doReturn(Optional.of(videoDto)).when(videosDatabase).cadastrarVideo(any(CadastrarVideoCommand.class));
 		
 		CadastrarVideoCommand command = new CadastrarVideoCommand("Título", "Descrição", "Link", 1L);
+		
+		VideoDto videoPersistido = videosFacade.executar(command);
+		
+		verify(videosDatabase, times(1)).cadastrarVideo(any(CadastrarVideoCommand.class));
+		
+		assertEquals(videoDto.getId(), videoPersistido.getId());
+		assertEquals(videoDto.getTitulo(), videoPersistido.getTitulo());
+		assertEquals(videoDto.getDescricao(), videoPersistido.getDescricao());
+		assertEquals(videoDto.getUrl(), videoPersistido.getUrl());
+	}
+	
+	@Test
+	@DisplayName("Tenta cadastrar vídeo sem categoria")
+	void cadastrarVideoSemCategoria() {
+		
+		VideoDto videoDto = new VideoDto(1L, "Título", "Descrição", "Link", 1L);
+		CategoriaDto categoriaDto = new CategoriaDto(1L, "LIVRE", "Azul");
+		
+		doReturn(Optional.of(videoDto)).when(videosDatabase).cadastrarVideo(any(CadastrarVideoCommand.class));
+		doReturn(categoriaDto).when(categoriaDatabase).obterPeloTitulo(any(String.class));
+		
+		CadastrarVideoCommand command = new CadastrarVideoCommand("Título", "Descrição", "Link", null);
 		
 		VideoDto videoPersistido = videosFacade.executar(command);
 		

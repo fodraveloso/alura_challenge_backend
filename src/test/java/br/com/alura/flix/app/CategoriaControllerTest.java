@@ -109,6 +109,20 @@ class CategoriaControllerTest {
 	}
 
 	@Test
+	@DisplayName("Tenta atualizar categoria pelo id com dados invalidos")
+	void atualizarCategoriaPeloIdComDadosInvalidos() throws Exception {
+
+		CategoriaDto categoriaDto = new CategoriaDto(1L, "Novo Título", "Nova Cor");
+
+		doReturn(categoriaDto).when(categoriaService).executar(any(AtualizarCategoriaCommand.class));
+
+		this.mockMvc
+				.perform(MockMvcRequestBuilders.put("/categorias/1").contentType(MediaType.APPLICATION_JSON)
+						.content(JsonCreator.startJson().name("titulo").name("cor").endJson()))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
 	@DisplayName("Tenta apagar categoria pelo id")
 	void apagarCategoriaPeloId() throws Exception {
 
@@ -148,8 +162,7 @@ class CategoriaControllerTest {
 		doReturn(List.of(videoDto)).when(categoriaService).executar(any(ObterVideosPorCategoriaQuery.class));
 
 		this.mockMvc.perform(MockMvcRequestBuilders.get("/categorias/1/videos").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("[0].id").value(videoDto.getId()))
+				.andExpect(status().isOk()).andExpect(jsonPath("[0].id").value(videoDto.getId()))
 				.andExpect(jsonPath("[0].titulo").value(videoDto.getTitulo()))
 				.andExpect(jsonPath("[0].descricao").value(videoDto.getDescricao()))
 				.andExpect(jsonPath("[0].url").value(videoDto.getUrl()))

@@ -57,7 +57,7 @@ public class CategoriaController {
 	@PutMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
 	public CategoriaDto atualizarCategoria(@PathVariable("id") Long id,
-			@RequestBody AtualizarCategoriaRequest request) {
+			@RequestBody @Validated AtualizarCategoriaRequest request) {
 
 		return service.executar(new AtualizarCategoriaCommand(id, request.getTitulo(), request.getCor()));
 	}
