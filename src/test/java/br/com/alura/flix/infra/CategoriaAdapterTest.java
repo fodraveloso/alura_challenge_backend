@@ -2,6 +2,7 @@ package br.com.alura.flix.infra;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -14,12 +15,16 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import br.com.alura.flix.core.categorias.models.CategoriaDto;
+import br.com.alura.flix.core.categorias.models.command.ApagarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.AtualizarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.CadastrarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.query.ObterCategoriaPeloIdQuery;
+import br.com.alura.flix.core.categorias.models.query.ObterVideosPorCategoriaQuery;
+import br.com.alura.flix.core.videos.models.VideoDto;
 import br.com.alura.flix.infra.categorias.CategoriaAdapter;
 import br.com.alura.flix.infra.categorias.entities.CategoriaEntity;
 import br.com.alura.flix.infra.categorias.repositories.CategoriaRepository;
+import br.com.alura.flix.infra.videos.entities.VideoEntity;
 
 @DataJpaTest
 @DisplayName("Infra: Categoria")
@@ -97,5 +102,44 @@ class CategoriaAdapterTest {
 		assertEquals(categoria.getId(), atualizarCategoria.getId());
 		assertEquals(command.getTitulo(), atualizarCategoria.getTitulo());
 		assertEquals(command.getCor(), atualizarCategoria.getCor());
+	}
+	
+	@Test
+	@DisplayName("Tenta apagar categoria pelo id")
+	void apagarCategoria() {
+		
+		CategoriaEntity categoria = testEntityManager.persistAndFlush(new CategoriaEntity("Titulo 1", "Cor 1"));
+		
+		ApagarCategoriaCommand command = new ApagarCategoriaCommand(categoria.getId());
+		
+		categoriaAdapter.apagarCategoria(command);
+		
+		assertTrue(Objects.isNull(testEntityManager.find(CategoriaEntity.class, categoria.getId())));
+	}
+	
+	@Test
+	@DisplayName("Tenta obter lista de videos pela categoria")
+	void obterListaDeVideosPelaCategoria() {
+		
+		CategoriaEntity categoria = testEntityManager.persistAndFlush(new CategoriaEntity("Titulo 1", "Cor 1"));
+		
+		VideoEntity video = testEntityManager.persistAndFlush(new VideoEntity("Titulo 1", "Descrição 1", "Link 1", categoria));
+				
+		testEntityManager.flush();
+		testEntityManager.clear();
+		
+		ObterVideosPorCategoriaQuery query = new ObterVideosPorCategoriaQuery(categoria.getId());
+		
+		Collection<VideoDto> videosObtidos = categoriaAdapter.obterListaDeVideosPorCategoria(query);
+		
+		assertEquals(1, videosObtidos.size());
+		
+		VideoDto videoObtido = videosObtidos.iterator().next();
+		
+		assertEquals(video.getCategoriaEntity().getId(), videoObtido.getCategoriaId());
+		assertEquals(video.getId(), videoObtido.getId());
+		assertEquals(video.getTitulo(), videoObtido.getTitulo());
+		assertEquals(video.getDescricao(), videoObtido.getDescricao());
+		assertEquals(video.getUrl(), videoObtido.getUrl());
 	}
 }

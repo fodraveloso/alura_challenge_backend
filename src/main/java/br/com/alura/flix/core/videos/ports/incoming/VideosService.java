@@ -2,6 +2,7 @@ package br.com.alura.flix.core.videos.ports.incoming;
 
 import java.util.Collection;
 
+import br.com.alura.flix.core.categorias.models.command.ObterVideoPeloTituloQuery;
 import br.com.alura.flix.core.videos.models.VideoDto;
 import br.com.alura.flix.core.videos.models.command.AtualizarVideoCommand;
 import br.com.alura.flix.core.videos.models.command.CadastrarVideoCommand;
@@ -19,5 +20,7 @@ public interface VideosService {
 	VideoDto executar(CadastrarVideoCommand command);
 
 	VideoDto executar(AtualizarVideoCommand atualizarVideoCommand);
+
+	Collection<VideoDto> executar(ObterVideoPeloTituloQuery query);
 
 }

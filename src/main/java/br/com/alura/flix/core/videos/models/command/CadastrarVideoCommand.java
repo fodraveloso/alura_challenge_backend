@@ -10,4 +10,5 @@ public class CadastrarVideoCommand {
 	private final String titulo;
 	private final String descricao;
 	private final String url;
+	private final Long categoriaId;
 }

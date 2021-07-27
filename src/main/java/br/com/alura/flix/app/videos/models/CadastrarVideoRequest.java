@@ -18,4 +18,6 @@ public class CadastrarVideoRequest {
 	@URL(message = "O valor preenchido na URL é invalido")
 	@NotBlank(message = "O link do vídeo deve ser preenchido")
 	private String url;
+	
+	private Long categoriaId;
 }

@@ -12,7 +12,9 @@ import br.com.alura.flix.core.categorias.models.command.ApagarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.AtualizarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.CadastrarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.query.ObterCategoriaPeloIdQuery;
+import br.com.alura.flix.core.categorias.models.query.ObterVideosPorCategoriaQuery;
 import br.com.alura.flix.core.categorias.ports.outgoing.CategoriaDatabase;
+import br.com.alura.flix.core.videos.models.VideoDto;
 import br.com.alura.flix.infra.categorias.entities.CategoriaEntity;
 import br.com.alura.flix.infra.categorias.repositories.CategoriaRepository;
 import lombok.RequiredArgsConstructor;
@@ -56,13 +58,27 @@ public class CategoriaAdapter implements CategoriaDatabase {
 		Optional.ofNullable(command.getTitulo()).ifPresent(categoria::atualizarTitulo);
 
 		return Optional.of(categoriaRepository.save(categoria))
-				.map(cat -> new CategoriaDto(cat.getId(), cat.getTitulo(), cat.getCor()))
-				.orElseThrow();
+				.map(cat -> new CategoriaDto(cat.getId(), cat.getTitulo(), cat.getCor())).orElseThrow();
 	}
 
 	@Override
 	public void apagarCategoria(ApagarCategoriaCommand command) {
-		// TODO Auto-generated method stub
-		
+
+		CategoriaEntity categoria = categoriaRepository.findById(command.getId()).orElseThrow();
+		categoriaRepository.delete(categoria);
+	}
+
+	@Override
+	public CategoriaDto obterPeloTitulo(String titulo) {
+
+		return categoriaRepository.findByTitulo(titulo).orElseThrow();
+	}
+
+	@Override
+	public Collection<VideoDto> obterListaDeVideosPorCategoria(ObterVideosPorCategoriaQuery query) {
+
+		return categoriaRepository.findById(query.getCategoriaId()).orElseThrow().getVideos().stream()
+				.map(video -> new VideoDto(video.getId(), video.getTitulo(), video.getDescricao(), video.getUrl(),
+						query.getCategoriaId())).collect(Collectors.toCollection(ArrayList::new));
 	}
 }

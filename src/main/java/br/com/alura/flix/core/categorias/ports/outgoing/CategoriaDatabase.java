@@ -7,6 +7,8 @@ import br.com.alura.flix.core.categorias.models.command.ApagarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.AtualizarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.CadastrarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.query.ObterCategoriaPeloIdQuery;
+import br.com.alura.flix.core.categorias.models.query.ObterVideosPorCategoriaQuery;
+import br.com.alura.flix.core.videos.models.VideoDto;
 
 public interface CategoriaDatabase {
 
@@ -19,5 +21,9 @@ public interface CategoriaDatabase {
 	CategoriaDto atualizarCategoria(AtualizarCategoriaCommand command);
 
 	void apagarCategoria(ApagarCategoriaCommand command);
+
+	CategoriaDto obterPeloTitulo(String titulo);
+
+	Collection<VideoDto> obterListaDeVideosPorCategoria(ObterVideosPorCategoriaQuery query);
 
 }

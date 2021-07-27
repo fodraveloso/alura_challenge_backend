@@ -1,6 +1,7 @@
 package br.com.alura.flix.app.videos.controllers;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -13,12 +14,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.alura.flix.app.common.models.ErroResponse;
 import br.com.alura.flix.app.videos.models.AtualizarVideoRequest;
 import br.com.alura.flix.app.videos.models.CadastrarVideoRequest;
+import br.com.alura.flix.core.categorias.models.command.ObterVideoPeloTituloQuery;
 import br.com.alura.flix.core.videos.exceptions.VideoNaoExisteException;
 import br.com.alura.flix.core.videos.models.VideoDto;
 import br.com.alura.flix.core.videos.models.command.AtualizarVideoCommand;
@@ -37,9 +40,15 @@ public class VideosController {
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	public Collection<VideoDto> obterListaDeVideos() {
+	public Collection<VideoDto> obterListaDeVideos(@RequestParam("search") Optional<String> titulo) {
 
-		return videosService.executar();
+		if (titulo.isEmpty()) {
+			
+			return videosService.executar();
+		} else {
+			
+			return videosService.executar(new ObterVideoPeloTituloQuery(titulo.get()));
+		}
 	}
 
 	@GetMapping("/{id}")
@@ -60,8 +69,8 @@ public class VideosController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public void cadastrarVideo(@RequestBody @Validated CadastrarVideoRequest request) {
 
-		videosService
-				.executar(new CadastrarVideoCommand(request.getTitulo(), request.getDescricao(), request.getUrl()));
+		videosService.executar(new CadastrarVideoCommand(request.getTitulo(), request.getDescricao(), request.getUrl(),
+				request.getCategoriaId()));
 	}
 
 	@PutMapping("/{id}")

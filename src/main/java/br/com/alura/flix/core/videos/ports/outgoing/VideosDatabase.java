@@ -3,6 +3,7 @@ package br.com.alura.flix.core.videos.ports.outgoing;
 import java.util.Collection;
 import java.util.Optional;
 
+import br.com.alura.flix.core.categorias.models.command.ObterVideoPeloTituloQuery;
 import br.com.alura.flix.core.videos.models.VideoDto;
 import br.com.alura.flix.core.videos.models.command.AtualizarVideoCommand;
 import br.com.alura.flix.core.videos.models.command.CadastrarVideoCommand;
@@ -13,10 +14,12 @@ public interface VideosDatabase {
 
 	Optional<VideoDto> pesquisarPeloId(long id);
 
-	Optional<VideoDto> deletarPeloId(Long id);
+	void deletarPeloId(Long id);
 
 	Optional<VideoDto> cadastrarVideo(CadastrarVideoCommand command);
 
 	Optional<VideoDto> atualizarVideo(AtualizarVideoCommand command);
+
+	Collection<VideoDto> obterVideoPeloTitulo(ObterVideoPeloTituloQuery query);
 
 }

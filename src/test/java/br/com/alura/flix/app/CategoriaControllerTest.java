@@ -25,7 +25,9 @@ import br.com.alura.flix.core.categorias.models.command.ApagarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.AtualizarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.CadastrarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.query.ObterCategoriaPeloIdQuery;
+import br.com.alura.flix.core.categorias.models.query.ObterVideosPorCategoriaQuery;
 import br.com.alura.flix.core.categorias.ports.incoming.CategoriaService;
+import br.com.alura.flix.core.videos.models.VideoDto;
 import br.com.alura.flix.utils.JsonCreator;
 
 @WebMvcTest(CategoriaController.class)
@@ -135,5 +137,22 @@ class CategoriaControllerTest {
 				.andExpect(status().isBadRequest());
 
 		verify(categoriaService, times(0)).executar(any(CadastrarCategoriaCommand.class));
+	}
+
+	@Test
+	@DisplayName("Tenta obter lista de videos por categoria")
+	void obterListaDeVideosPorCategoria() throws Exception {
+
+		VideoDto videoDto = new VideoDto(1L, "Titulo do Vídeo", "Descrição do vídeo", "URL do vídeo", 1L);
+
+		doReturn(List.of(videoDto)).when(categoriaService).executar(any(ObterVideosPorCategoriaQuery.class));
+
+		this.mockMvc.perform(MockMvcRequestBuilders.get("/categorias/1/videos").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("[0].id").value(videoDto.getId()))
+				.andExpect(jsonPath("[0].titulo").value(videoDto.getTitulo()))
+				.andExpect(jsonPath("[0].descricao").value(videoDto.getDescricao()))
+				.andExpect(jsonPath("[0].url").value(videoDto.getUrl()))
+				.andExpect(jsonPath("[0].categoriaId").value(videoDto.getCategoriaId()));
 	}
 }

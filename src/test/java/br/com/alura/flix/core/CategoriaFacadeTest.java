@@ -24,7 +24,9 @@ import br.com.alura.flix.core.categorias.models.command.ApagarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.AtualizarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.CadastrarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.query.ObterCategoriaPeloIdQuery;
+import br.com.alura.flix.core.categorias.models.query.ObterVideosPorCategoriaQuery;
 import br.com.alura.flix.core.categorias.ports.outgoing.CategoriaDatabase;
+import br.com.alura.flix.core.videos.models.VideoDto;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Core: Categoria")
@@ -125,5 +127,32 @@ class CategoriaFacadeTest {
 		assertDoesNotThrow(() -> categoriaFacade.executar(command));
 		
 		verify(categoriaDatabase, times(1)).apagarCategoria(any(ApagarCategoriaCommand.class));
+	}
+	
+	@Test
+	@DisplayName("Tenta obter lista de videos pela categoria")
+	void obterListaDeVideosPelaCategoria() {
+		
+		VideoDto videoDto = new VideoDto(1L, "Titulo", "Descrição", "http://url.com.br/video/1", 1L);
+		
+		ObterVideosPorCategoriaQuery query = new ObterVideosPorCategoriaQuery(1L);
+		
+		doReturn(List.of(videoDto)).when(categoriaDatabase).obterListaDeVideosPorCategoria(query);
+		
+		Collection<VideoDto> executar = categoriaFacade.executar(query);
+		
+		verify(categoriaDatabase, times(1)).obterListaDeVideosPorCategoria(any(ObterVideosPorCategoriaQuery.class));
+		
+		assertEquals(1, executar.size());
+		
+		VideoDto video = executar.iterator().next();
+		
+		assertEquals(videoDto.getId(), video.getId());
+		assertEquals(videoDto.getTitulo(), video.getTitulo());
+		assertEquals(videoDto.getDescricao(), video.getDescricao());
+		assertEquals(videoDto.getUrl(), video.getUrl());
+		assertEquals(videoDto.getCategoriaId(), video.getCategoriaId());
+		
+		
 	}
 }

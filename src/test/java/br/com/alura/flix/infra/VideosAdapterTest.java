@@ -1,6 +1,8 @@
 package br.com.alura.flix.infra;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -14,9 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import br.com.alura.flix.core.categorias.models.command.ObterVideoPeloTituloQuery;
 import br.com.alura.flix.core.videos.models.VideoDto;
 import br.com.alura.flix.core.videos.models.command.AtualizarVideoCommand;
 import br.com.alura.flix.core.videos.models.command.CadastrarVideoCommand;
+import br.com.alura.flix.infra.categorias.entities.CategoriaEntity;
+import br.com.alura.flix.infra.categorias.repositories.CategoriaRepository;
 import br.com.alura.flix.infra.videos.VideosAdapter;
 import br.com.alura.flix.infra.videos.entities.VideoEntity;
 import br.com.alura.flix.infra.videos.repositories.VideoRepository;
@@ -31,19 +36,24 @@ class VideosAdapterTest {
 	@Autowired
 	private VideoRepository videoRepository;
 	
+	@Autowired
+	private CategoriaRepository categoriaRepository;
+	
 	private VideosAdapter adapter;
 	
 	@BeforeEach
 	void setup() {
 		
-		this.adapter = new VideosAdapter(videoRepository);
+		this.adapter = new VideosAdapter(videoRepository, categoriaRepository);
 	}
 	
 	@Test
 	@DisplayName("Tenta pesquisar lista de vídeos")
 	void pesquisarListaDeVideos() {
 		
-		VideoEntity video = testEntityManager.persistAndFlush(new VideoEntity("Titulo 1", "Descrição 1", "Link 1"));
+		CategoriaEntity categoria = testEntityManager.persistAndFlush(new CategoriaEntity("LIVRE", "Cor 1"));
+		
+		VideoEntity video = testEntityManager.persistAndFlush(new VideoEntity("Titulo 1", "Descrição 1", "Link 1", categoria));
 		
 		Collection<VideoDto> pesquisarListaDeVideos = adapter.pesquisarListaDeVideos();
 		
@@ -69,7 +79,9 @@ class VideosAdapterTest {
 	@DisplayName("Tenta pesquisar video pelo id")
 	void pesquisarVideoPeloId() {
 		
-		VideoEntity video = testEntityManager.persistAndFlush(new VideoEntity("Titulo 1", "Descrição 1", "Link 1"));
+		CategoriaEntity categoria = testEntityManager.persistAndFlush(new CategoriaEntity("LIVRE", "Cor 1"));
+		
+		VideoEntity video = testEntityManager.persistAndFlush(new VideoEntity("Titulo 1", "Descrição 1", "Link 1", categoria));
 		
 		Optional<VideoDto> pesquisarPeloId = adapter.pesquisarPeloId(video.getId());
 		
@@ -96,27 +108,20 @@ class VideosAdapterTest {
 	@DisplayName("Tenta deletar video pelo id")
 	void deletarVideoPeloId() {
 		
-		VideoEntity video = testEntityManager.persistAndFlush(new VideoEntity("Titulo 1", "Descrição 1", "Link 1"));
+		CategoriaEntity categoria = testEntityManager.persistAndFlush(new CategoriaEntity("LIVRE", "Cor 1"));
 		
-		Optional<VideoDto> deletarPeloId = adapter.deletarPeloId(video.getId());
+		VideoEntity video = testEntityManager.persistAndFlush(new VideoEntity("Titulo 1", "Descrição 1", "Link 1", categoria));
 		
-		assertTrue(deletarPeloId.isPresent());
-	}
-	
-	@Test
-	@DisplayName("Tenta deletar video pelo id que não existe")
-	void deletarVideoPeloIdQUeNaoExiste() {
-		
-		Optional<VideoDto> deletarPeloId = adapter.deletarPeloId(1L);
-		
-		assertTrue(deletarPeloId.isEmpty());
+		assertDoesNotThrow(() -> adapter.deletarPeloId(video.getId()));
 	}
 	
 	@Test
 	@DisplayName("Tenta cadastra video")
 	void cadastrarVideo() {
 		
-		CadastrarVideoCommand command = new CadastrarVideoCommand("Título", "Descrição", "Link");
+		CategoriaEntity categoria = testEntityManager.persistAndFlush(new CategoriaEntity("LIVRE", "Cor 1"));
+		
+		CadastrarVideoCommand command = new CadastrarVideoCommand("Título", "Descrição", "Link", categoria.getId());
 		
 		Optional<VideoDto> cadastrarVideo = adapter.cadastrarVideo(command);
 		
@@ -132,7 +137,9 @@ class VideosAdapterTest {
 	@DisplayName("Tenta atualizar o vídeo")
 	void atualizaVideo() {
 		
-		VideoEntity video = testEntityManager.persistAndFlush(new VideoEntity("Titulo 1", "Descrição 1", "Link 1"));
+		CategoriaEntity categoria = testEntityManager.persistAndFlush(new CategoriaEntity("LIVRE", "Cor 1"));
+		
+		VideoEntity video = testEntityManager.persistAndFlush(new VideoEntity("Titulo 1", "Descrição 1", "Link 1", categoria));
 		
 		AtualizarVideoCommand command = new AtualizarVideoCommand(video.getId(), "Novo Título", "Nova Descrição", "Nova URL");
 		
@@ -143,5 +150,28 @@ class VideosAdapterTest {
 		assertEquals(command.getTitulo(), atualizarVideo.get().getTitulo());
 		assertEquals(command.getDescricao(), atualizarVideo.get().getDescricao());
 		assertEquals(command.getUrl(), atualizarVideo.get().getUrl());
+	}
+	
+	@Test
+	@DisplayName("Tenta obter lista de videos com query")
+	void obterListaDeVideosComquery() {
+		
+		CategoriaEntity categoria = testEntityManager.persistAndFlush(new CategoriaEntity("LIVRE", "Cor 1"));
+		
+		VideoEntity video = testEntityManager.persistAndFlush(new VideoEntity("Titulo 1", "Descrição 1", "Link 1", categoria));
+		
+		ObterVideoPeloTituloQuery query = new ObterVideoPeloTituloQuery("Titulo 1");
+		
+		Collection<VideoDto> videosObtido = adapter.obterVideoPeloTitulo(query);
+		
+		assertFalse(videosObtido.isEmpty());
+		
+		VideoDto videoObtido = videosObtido.iterator().next();
+		
+		assertEquals(video.getId(), videoObtido.getId());
+		assertEquals(video.getCategoriaEntity().getId(), videoObtido.getCategoriaId());
+		assertEquals(video.getTitulo(), videoObtido.getTitulo());
+		assertEquals(video.getDescricao(), videoObtido.getDescricao());
+		assertEquals(video.getUrl(), videoObtido.getUrl());
 	}
 }

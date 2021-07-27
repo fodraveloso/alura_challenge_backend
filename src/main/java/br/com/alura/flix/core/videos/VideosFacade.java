@@ -1,9 +1,13 @@
 package br.com.alura.flix.core.videos;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
+import br.com.alura.flix.core.categorias.models.CategoriaDto;
+import br.com.alura.flix.core.categorias.models.command.ObterVideoPeloTituloQuery;
+import br.com.alura.flix.core.categorias.ports.outgoing.CategoriaDatabase;
 import br.com.alura.flix.core.videos.exceptions.VideoNaoExisteException;
 import br.com.alura.flix.core.videos.models.VideoDto;
 import br.com.alura.flix.core.videos.models.command.AtualizarVideoCommand;
@@ -19,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class VideosFacade implements VideosService {
 
 	private final VideosDatabase videosDatabase;
+	private final CategoriaDatabase categoriaDatabase;
 
 	@Override
 	public Collection<VideoDto> executar() {
@@ -36,12 +41,18 @@ public class VideosFacade implements VideosService {
 	@Override
 	public void executar(DeletarVideoCommand command) {
 
-		videosDatabase.deletarPeloId(command.getId()).orElseThrow(() -> new VideoNaoExisteException(command.getId()));
+		videosDatabase.deletarPeloId(command.getId());
 	}
 
 	@Override
 	public VideoDto executar(CadastrarVideoCommand command) {
 
+		if (Objects.isNull(command.getCategoriaId())) {
+			
+			CategoriaDto categoria = categoriaDatabase.obterPeloTitulo("LIVRE");
+			command = new CadastrarVideoCommand(command.getTitulo(), command.getDescricao(), command.getUrl(), categoria.getId());
+		}
+		
 		return videosDatabase.cadastrarVideo(command).orElseThrow();
 	}
 
@@ -49,6 +60,12 @@ public class VideosFacade implements VideosService {
 	public VideoDto executar(AtualizarVideoCommand command) {
 		
 		return videosDatabase.atualizarVideo(command).orElseThrow();
+	}
+
+	@Override
+	public Collection<VideoDto> executar(ObterVideoPeloTituloQuery query) {
+
+		return videosDatabase.obterVideoPeloTitulo(query);
 	}
 
 }

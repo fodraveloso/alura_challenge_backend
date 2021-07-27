@@ -21,7 +21,9 @@ import br.com.alura.flix.core.categorias.models.command.ApagarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.AtualizarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.CadastrarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.query.ObterCategoriaPeloIdQuery;
+import br.com.alura.flix.core.categorias.models.query.ObterVideosPorCategoriaQuery;
 import br.com.alura.flix.core.categorias.ports.incoming.CategoriaService;
+import br.com.alura.flix.core.videos.models.VideoDto;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -65,5 +67,12 @@ public class CategoriaController {
 	public void apagarCategoriaPeloId(@PathVariable("id") Long id) {
 		
 		service.executar(new ApagarCategoriaCommand(id));
+	}
+	
+	@GetMapping("/{id}/videos")
+	@ResponseStatus(HttpStatus.OK)
+	public Collection<VideoDto> obterListaDeVideosPorCategoria(@PathVariable("id") Long id) {
+		
+		return service.executar(new ObterVideosPorCategoriaQuery(id));
 	}
 }

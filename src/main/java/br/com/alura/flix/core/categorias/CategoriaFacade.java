@@ -9,8 +9,10 @@ import br.com.alura.flix.core.categorias.models.command.ApagarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.AtualizarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.CadastrarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.query.ObterCategoriaPeloIdQuery;
+import br.com.alura.flix.core.categorias.models.query.ObterVideosPorCategoriaQuery;
 import br.com.alura.flix.core.categorias.ports.incoming.CategoriaService;
 import br.com.alura.flix.core.categorias.ports.outgoing.CategoriaDatabase;
+import br.com.alura.flix.core.videos.models.VideoDto;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -47,5 +49,11 @@ public class CategoriaFacade implements CategoriaService {
 	public void executar(ApagarCategoriaCommand command) {
 
 		categoriaDatabase.apagarCategoria(command);
+	}
+
+	@Override
+	public Collection<VideoDto> executar(ObterVideosPorCategoriaQuery query) {
+
+		return categoriaDatabase.obterListaDeVideosPorCategoria(query);
 	}
 }

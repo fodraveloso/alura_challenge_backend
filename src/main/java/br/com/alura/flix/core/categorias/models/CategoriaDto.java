@@ -10,4 +10,5 @@ public class CategoriaDto {
 	private final Long id;
 	private final String titulo;
 	private final String cor;
+	
 }

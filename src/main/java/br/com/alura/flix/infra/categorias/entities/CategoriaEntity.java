@@ -1,12 +1,16 @@
 package br.com.alura.flix.infra.categorias.entities;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import br.com.alura.flix.infra.videos.entities.VideoEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +30,10 @@ public class CategoriaEntity {
 	
 	@Column(nullable = false)
 	private String cor;
+	
+	@OneToMany(mappedBy = "categoriaEntity")
+	private List<VideoEntity> videos;
+	
 
 	public CategoriaEntity(String titulo, String cor) {
 		this.titulo = titulo;

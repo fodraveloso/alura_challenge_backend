@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import br.com.alura.flix.app.videos.controllers.VideosController;
+import br.com.alura.flix.core.categorias.models.command.ObterVideoPeloTituloQuery;
 import br.com.alura.flix.core.videos.exceptions.VideoNaoExisteException;
 import br.com.alura.flix.core.videos.models.VideoDto;
 import br.com.alura.flix.core.videos.models.command.CadastrarVideoCommand;
@@ -44,7 +45,7 @@ class VideosControllerTest {
 	@DisplayName("Tenta obter lista de videos com dados")
 	void obterListaDeVideos_comDados() throws Exception {
 
-		VideoDto videoDto = new VideoDto(1L, "Titulo do Vídeo", "Descrição do vídeo", "URL do vídeo");
+		VideoDto videoDto = new VideoDto(1L, "Titulo do Vídeo", "Descrição do vídeo", "URL do vídeo", 1L);
 
 		doReturn(List.of(videoDto)).when(videosService).executar();
 
@@ -72,7 +73,7 @@ class VideosControllerTest {
 	@DisplayName("Tenta obter video pelo ID")
 	void obterVideoPeloId_Sucesso() throws Exception {
 
-		VideoDto videoDto = new VideoDto(1L, "Titulo do Vídeo", "Descrição do vídeo", "URL do vídeo");
+		VideoDto videoDto = new VideoDto(1L, "Titulo do Vídeo", "Descrição do vídeo", "URL do vídeo", 1L);
 
 		doReturn(videoDto).when(videosService).executar(any(ObterVideoQuery.class));
 
@@ -120,7 +121,7 @@ class VideosControllerTest {
 	@DisplayName("Tenta cadastrar novo vídeo")
 	void cadastrarVideo() throws Exception {
 
-		VideoDto videoDto = new VideoDto(1L, "Titulo do Vídeo", "Descrição do vídeo", "URL do vídeo");
+		VideoDto videoDto = new VideoDto(1L, "Titulo do Vídeo", "Descrição do vídeo", "URL do vídeo", 1L);
 
 		doReturn(videoDto).when(videosService).executar(any(CadastrarVideoCommand.class));
 
@@ -174,7 +175,8 @@ class VideosControllerTest {
 	void atualizarLinkVideo() throws Exception {
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/video/1").contentType(MediaType.APPLICATION_JSON)
-				.content(JsonCreator.startJson().name("url").value("http://link.com/1").endJson())).andExpect(status().isOk());
+				.content(JsonCreator.startJson().name("url").value("http://link.com/1").endJson()))
+				.andExpect(status().isOk());
 	}
 
 	@Test
@@ -183,5 +185,22 @@ class VideosControllerTest {
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/video/1").contentType(MediaType.APPLICATION_JSON)
 				.content(JsonCreator.startJson().endJson())).andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@DisplayName("Tenta obter videos com query")
+	void obterVideoPorQuery() throws Exception {
+
+		VideoDto videoDto = new VideoDto(1L, "Título", "Descrição", "Http://url.com.br/videos/1", 1L);
+
+		doReturn(List.of(videoDto)).when(videosService).executar(any(ObterVideoPeloTituloQuery.class));
+
+		mockMvc.perform(MockMvcRequestBuilders.get("/video?search=jogos").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("[0].id").value(videoDto.getId()))
+				.andExpect(jsonPath("[0].titulo").value(videoDto.getTitulo()))
+				.andExpect(jsonPath("[0].descricao").value(videoDto.getDescricao()))
+				.andExpect(jsonPath("[0].url").value(videoDto.getUrl()))
+				.andExpect(jsonPath("[0].categoriaId").value(videoDto.getCategoriaId()));
+
 	}
 }
