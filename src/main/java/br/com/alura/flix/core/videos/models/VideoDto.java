@@ -1,15 +1,18 @@
 package br.com.alura.flix.core.videos.models;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class VideoDto {
 
-	private final Long id;
-	private final String titulo;
-	private final String descricao;
-	private final String url;
-	private final Long categoriaId;
+	private Long id;
+	private String titulo;
+	private String descricao;
+	private String url;
+	private Long categoriaId;
 }

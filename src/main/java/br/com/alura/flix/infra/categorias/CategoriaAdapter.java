@@ -71,7 +71,9 @@ public class CategoriaAdapter implements CategoriaDatabase {
 	@Override
 	public CategoriaDto obterPeloTitulo(String titulo) {
 
-		return categoriaRepository.findByTitulo(titulo).orElseThrow();
+		return categoriaRepository.findByTitulo(titulo)
+				.map(categoria -> new CategoriaDto(categoria.getId(), categoria.getTitulo(), categoria.getCor()))
+				.orElseThrow();
 	}
 
 	@Override

@@ -1,14 +1,17 @@
 package br.com.alura.flix.core.categorias.models;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CategoriaDto {
 
-	private final Long id;
-	private final String titulo;
-	private final String cor;
+	private Long id;
+	private String titulo;
+	private String cor;
 	
 }
