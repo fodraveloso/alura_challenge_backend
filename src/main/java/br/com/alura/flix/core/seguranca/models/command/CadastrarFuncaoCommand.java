@@ -1,4 +1,4 @@
-package br.com.alura.flix.app.seguranca.models.command;
+package br.com.alura.flix.core.seguranca.models.command;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

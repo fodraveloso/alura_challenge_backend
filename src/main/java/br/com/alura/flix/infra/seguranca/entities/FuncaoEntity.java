@@ -1,5 +1,7 @@
 package br.com.alura.flix.infra.seguranca.entities;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,7 +17,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "Funcao")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-public class FuncaoEntity {
+public class FuncaoEntity implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

@@ -16,9 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import br.com.alura.flix.app.seguranca.models.command.CadastrarFuncaoCommand;
-import br.com.alura.flix.core.seguranca.SegurancaFacade;
+import br.com.alura.flix.core.seguranca.FuncaoFacade;
 import br.com.alura.flix.core.seguranca.models.FuncaoDto;
+import br.com.alura.flix.core.seguranca.models.command.CadastrarFuncaoCommand;
 import br.com.alura.flix.core.seguranca.ports.outgoing.FuncaoBancodados;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,7 +29,7 @@ class FuncaoFacadeTest {
 	private FuncaoBancodados funcaoBancodados;
 
 	@InjectMocks
-	private SegurancaFacade segurancaFacade;
+	private FuncaoFacade segurancaFacade;
 
 	@Test
 	@DisplayName("Tenta cadastrar função")

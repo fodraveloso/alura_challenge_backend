@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.Import;
 
 import br.com.alura.flix.core.categorias.models.command.ObterVideoPeloTituloQuery;
 import br.com.alura.flix.core.videos.exceptions.VideoNaoExisteException;
@@ -27,9 +28,11 @@ import br.com.alura.flix.infra.categorias.repositories.CategoriaRepository;
 import br.com.alura.flix.infra.videos.VideosAdapter;
 import br.com.alura.flix.infra.videos.entities.VideoEntity;
 import br.com.alura.flix.infra.videos.repositories.VideoRepository;
+import br.com.alura.flix.utils.TestSecurityBCryptConfig;
 
 @DataJpaTest
 @DisplayName("Infra: Videos")
+@Import(TestSecurityBCryptConfig.class)
 class VideosAdapterTest {
 
 	@Autowired

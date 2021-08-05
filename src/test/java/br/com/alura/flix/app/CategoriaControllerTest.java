@@ -1,25 +1,29 @@
 package br.com.alura.flix.app;
 
+import static br.com.alura.flix.utils.JsonCreator.startJson;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-import br.com.alura.flix.app.categorias.controllers.CategoriaController;
 import br.com.alura.flix.core.categorias.models.CategoriaDto;
 import br.com.alura.flix.core.categorias.models.command.ApagarCategoriaCommand;
 import br.com.alura.flix.core.categorias.models.command.AtualizarCategoriaCommand;
@@ -30,15 +34,37 @@ import br.com.alura.flix.core.categorias.ports.incoming.CategoriaService;
 import br.com.alura.flix.core.videos.models.VideoDto;
 import br.com.alura.flix.utils.JsonCreator;
 
-@WebMvcTest(CategoriaController.class)
+@SpringBootTest
 @DisplayName("App: Categoria")
 class CategoriaControllerTest {
 
-	@Autowired
-	private MockMvc mockMvc;
-
 	@MockBean
 	private CategoriaService categoriaService;
+
+	@Autowired
+	private WebApplicationContext wac;
+
+	private MockMvc mockMvc;
+	private String tokenOwner;
+	private String tokenAdmin;
+
+	@BeforeEach
+	void setup() throws Exception {
+
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).apply(springSecurity()).build();
+
+		this.tokenAdmin = this.mockMvc
+				.perform(MockMvcRequestBuilders.post("/login").contentType(MediaType.APPLICATION_JSON).content(
+						startJson().name("username").value("joao.fodra").name("password").value("!@#qwe123").endJson()))
+				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+		
+		this.tokenOwner = this.mockMvc
+				.perform(
+						MockMvcRequestBuilders.post("/login").contentType(MediaType.APPLICATION_JSON)
+								.content(startJson().name("username").value("joao.veloso").name("password")
+										.value("123qwe!@#").endJson()))
+				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+	}
 
 	@Test
 	@DisplayName("Tenta cadastrar categoria")
@@ -48,10 +74,9 @@ class CategoriaControllerTest {
 				.executar(any(CadastrarCategoriaCommand.class));
 
 		this.mockMvc
-				.perform(
-						MockMvcRequestBuilders.post("/categorias").contentType(MediaType.APPLICATION_JSON)
-								.content(JsonCreator.startJson().name("titulo").value("Titutlo da categoria")
-										.name("cor").value("Cor da categoria").endJson()))
+				.perform(MockMvcRequestBuilders.post("/categorias").contentType(MediaType.APPLICATION_JSON)
+						.header("Authorization", tokenAdmin).content(JsonCreator.startJson().name("titulo")
+								.value("Titutlo da categoria").name("cor").value("Cor da categoria").endJson()))
 				.andExpect(status().isCreated());
 
 		verify(categoriaService, times(1)).executar(any(CadastrarCategoriaCommand.class));
@@ -65,7 +90,9 @@ class CategoriaControllerTest {
 
 		doReturn(categoriaDto).when(categoriaService).executar(any(ObterCategoriaPeloIdQuery.class));
 
-		this.mockMvc.perform(MockMvcRequestBuilders.get("/categorias/1").contentType(MediaType.APPLICATION_JSON))
+		this.mockMvc
+				.perform(MockMvcRequestBuilders.get("/categorias/1").contentType(MediaType.APPLICATION_JSON)
+						.header("Authorization", tokenAdmin))
 				.andExpect(status().isOk()).andExpect(jsonPath("id").value(categoriaDto.getId()))
 				.andExpect(jsonPath("titulo").value(categoriaDto.getTitulo()))
 				.andExpect(jsonPath("cor").value(categoriaDto.getCor()));
@@ -81,7 +108,9 @@ class CategoriaControllerTest {
 
 		doReturn(List.of(categoriaDto)).when(categoriaService).executar();
 
-		this.mockMvc.perform(MockMvcRequestBuilders.get("/categorias").contentType(MediaType.APPLICATION_JSON))
+		this.mockMvc
+				.perform(MockMvcRequestBuilders.get("/categorias").contentType(MediaType.APPLICATION_JSON)
+						.header("Authorization", tokenAdmin))
 				.andExpect(status().isOk()).andExpect(jsonPath("[0].id").value(categoriaDto.getId()))
 				.andExpect(jsonPath("[0].titulo").value(categoriaDto.getTitulo()))
 				.andExpect(jsonPath("[0].cor").value(categoriaDto.getCor()));
@@ -99,6 +128,7 @@ class CategoriaControllerTest {
 
 		this.mockMvc
 				.perform(MockMvcRequestBuilders.put("/categorias/1").contentType(MediaType.APPLICATION_JSON)
+						.header("Authorization", tokenAdmin)
 						.content(JsonCreator.startJson().name("id").value("1").name("titulo")
 								.value("Titutlo da categoria").name("cor").value("Cor da categoria").endJson()))
 				.andExpect(status().isOk()).andExpect(jsonPath("id").value(categoriaDto.getId()))
@@ -118,6 +148,7 @@ class CategoriaControllerTest {
 
 		this.mockMvc
 				.perform(MockMvcRequestBuilders.put("/categorias/1").contentType(MediaType.APPLICATION_JSON)
+						.header("Authorization", tokenAdmin)
 						.content(JsonCreator.startJson().name("titulo").name("cor").endJson()))
 				.andExpect(status().isBadRequest());
 	}
@@ -128,8 +159,8 @@ class CategoriaControllerTest {
 
 		doNothing().when(categoriaService).executar(any(ApagarCategoriaCommand.class));
 
-		this.mockMvc.perform(MockMvcRequestBuilders.delete("/categorias/1").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
+		this.mockMvc.perform(MockMvcRequestBuilders.delete("/categorias/1").contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", tokenAdmin)).andExpect(status().isOk());
 
 		verify(categoriaService, times(1)).executar(any(ApagarCategoriaCommand.class));
 	}
@@ -139,15 +170,18 @@ class CategoriaControllerTest {
 	void cadastrarCategoriaComRequestInvalido() throws Exception {
 
 		this.mockMvc
-				.perform(MockMvcRequestBuilders.post("/categorias").contentType(MediaType.APPLICATION_JSON).content(
-						JsonCreator.startJson().name("titulo").name("cor").value("Cor da categoria").endJson()))
+				.perform(
+						MockMvcRequestBuilders.post("/categorias").contentType(MediaType.APPLICATION_JSON)
+								.header("Authorization", tokenAdmin).content(JsonCreator.startJson().name("titulo")
+										.name("cor").value("Cor da categoria").endJson()))
 				.andExpect(status().isBadRequest());
 
 		verify(categoriaService, times(0)).executar(any(CadastrarCategoriaCommand.class));
 
 		this.mockMvc
-				.perform(MockMvcRequestBuilders.post("/categorias").contentType(MediaType.APPLICATION_JSON).content(
-						JsonCreator.startJson().name("titulo").value("Titulo da Categoria").name("cor").endJson()))
+				.perform(MockMvcRequestBuilders.post("/categorias").contentType(MediaType.APPLICATION_JSON)
+						.header("Authorization", tokenAdmin).content(JsonCreator.startJson().name("titulo")
+								.value("Titulo da Categoria").name("cor").endJson()))
 				.andExpect(status().isBadRequest());
 
 		verify(categoriaService, times(0)).executar(any(CadastrarCategoriaCommand.class));
@@ -161,7 +195,9 @@ class CategoriaControllerTest {
 
 		doReturn(List.of(videoDto)).when(categoriaService).executar(any(ObterVideosPorCategoriaQuery.class));
 
-		this.mockMvc.perform(MockMvcRequestBuilders.get("/categorias/1/videos").contentType(MediaType.APPLICATION_JSON))
+		this.mockMvc
+				.perform(MockMvcRequestBuilders.get("/categorias/1/videos").contentType(MediaType.APPLICATION_JSON)
+						.header("Authorization", tokenOwner))
 				.andExpect(status().isOk()).andExpect(jsonPath("[0].id").value(videoDto.getId()))
 				.andExpect(jsonPath("[0].titulo").value(videoDto.getTitulo()))
 				.andExpect(jsonPath("[0].descricao").value(videoDto.getDescricao()))

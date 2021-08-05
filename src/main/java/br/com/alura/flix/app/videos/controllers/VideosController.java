@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,6 +41,7 @@ public class VideosController {
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
+	@Secured({"ROLE_OWNER"})
 	public Collection<VideoDto> obterListaDeVideos(@RequestParam("search") Optional<String> titulo) {
 
 		if (titulo.isEmpty()) {
@@ -53,6 +55,7 @@ public class VideosController {
 
 	@GetMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
+	@Secured({"ROLE_OWNER"})
 	public VideoDto obterVideoPeloId(@PathVariable("id") Long id) {
 
 		return videosService.executar(new ObterVideoQuery(id));
@@ -60,6 +63,7 @@ public class VideosController {
 
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
+	@Secured({"ROLE_OWNER"})
 	public void deleterVideoPeloId(@PathVariable("id") Long id) {
 
 		videosService.executar(new DeletarVideoCommand(id));
@@ -67,6 +71,7 @@ public class VideosController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
+	@Secured({"ROLE_OWNER"})
 	public void cadastrarVideo(@RequestBody @Validated CadastrarVideoRequest request) {
 
 		videosService.executar(new CadastrarVideoCommand(request.getTitulo(), request.getDescricao(), request.getUrl(),
@@ -76,6 +81,7 @@ public class VideosController {
 	@PutMapping("/{id}")
 	@PatchMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
+	@Secured({"ROLE_OWNER"})
 	public void atualizaVideo(@RequestBody @Validated AtualizarVideoRequest request, @PathVariable("id") Long id) {
 
 		videosService

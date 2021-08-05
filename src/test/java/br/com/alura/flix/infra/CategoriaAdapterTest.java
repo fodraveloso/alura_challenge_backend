@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.Import;
 
 import br.com.alura.flix.core.categorias.models.CategoriaDto;
 import br.com.alura.flix.core.categorias.models.command.ApagarCategoriaCommand;
@@ -25,9 +26,11 @@ import br.com.alura.flix.infra.categorias.CategoriaAdapter;
 import br.com.alura.flix.infra.categorias.entities.CategoriaEntity;
 import br.com.alura.flix.infra.categorias.repositories.CategoriaRepository;
 import br.com.alura.flix.infra.videos.entities.VideoEntity;
+import br.com.alura.flix.utils.TestSecurityBCryptConfig;
 
 @DataJpaTest
 @DisplayName("Infra: Categoria")
+@Import(TestSecurityBCryptConfig.class)
 class CategoriaAdapterTest {
 
 	@Autowired
